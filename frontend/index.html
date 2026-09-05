@@ -1,131 +1,289 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>StockSense AI</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
-header{background:#101828;color:white;padding:24px 5%;font-size:28px;font-weight:800}
-header span{color:#55d6be}
-main{max-width:1200px;margin:35px auto;padding:0 20px}
-h1{font-size:38px;margin-bottom:8px}
-.sub{color:#667085;font-size:18px}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:30px 0}
-.card,.box{background:white;border-radius:18px;padding:24px;box-shadow:0 5px 20px #00000012}
-.card p{margin:0;color:#667085;font-weight:bold}
-.num{font-size:34px;font-weight:800;margin-top:12px}
-.box{margin-top:24px}
-h2{margin-top:0}
-table{width:100%;border-collapse:collapse}
-th,td{text-align:left;padding:15px;border-bottom:1px solid #eee}
-th{color:#667085}
-.badge{padding:6px 10px;border-radius:20px;font-size:12px;font-weight:bold}
-.critical{background:#fee4e2;color:#b42318}
-.high{background:#fff3d6;color:#b54708}
-input{width:75%;padding:14px;border:1px solid #ddd;border-radius:10px;font-size:15px}
-button{padding:14px 22px;background:#101828;color:white;border:0;border-radius:10px;font-weight:bold;cursor:pointer}
-#answer{margin-top:18px;padding:18px;background:#f8fafc;border-radius:12px;white-space:pre-wrap;line-height:1.6}
-@media(max-width:800px){.cards{grid-template-columns:2fr 2fr}input{width:65%}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockSense AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 24px 40px;
+    }
+
+    header h1 {
+      font-size: 28px;
+    }
+
+    header p {
+      margin-top: 6px;
+      color: #cbd5e1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.06);
+    }
+
+    .card h3 {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .card strong {
+      font-size: 30px;
+    }
+
+    .section {
+      background: white;
+      padding: 24px;
+      border-radius: 14px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.06);
+    }
+
+    .section h2 {
+      margin-bottom: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 13px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    th {
+      background: #f8fafc;
+    }
+
+    .critical {
+      color: #dc2626;
+      font-weight: bold;
+    }
+
+    .high {
+      color: #ea580c;
+      font-weight: bold;
+    }
+
+    .loading {
+      color: #64748b;
+      padding: 15px 0;
+    }
+
+    @media(max-width: 800px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
 
 <body>
-<header>Stock<span>Sense</span> AI</header>
 
-<main>
-<h1>Retail Inventory Intelligence</h1>
-<div class="sub">From raw retail data to decisions you can defend.</div>
+<header>
+  <h1>StockSense AI</h1>
+  <p>From Raw Retail Data to Decisions You Can Defend.</p>
+</header>
 
-<div class="cards">
-<div class="card"><p>Products</p><div class="num" id="products">12</div></div>
-<div class="card"><p>Critical Risk</p><div class="num" id="critical">3</div></div>
-<div class="card"><p>High Risk</p><div class="num" id="high">2</div></div>
-<div class="card"><p>Data Rows</p><div class="num" id="rows">168</div></div>
+<div class="container">
+
+  <div class="cards">
+    <div class="card">
+      <h3>Products</h3>
+      <strong id="products">-</strong>
+    </div>
+
+    <div class="card">
+      <h3>Critical Risk</h3>
+      <strong id="critical">-</strong>
+    </div>
+
+    <div class="card">
+      <h3>High Risk</h3>
+      <strong id="high">-</strong>
+    </div>
+
+    <div class="card">
+      <h3>Data Rows</h3>
+      <strong id="rows">-</strong>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Inventory Risk</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Stock</th>
+          <th>Avg Daily Sales</th>
+          <th>Inventory Cover</th>
+          <th>Risk</th>
+        </tr>
+      </thead>
+
+      <tbody id="riskTable">
+        <tr>
+          <td colspan="6" class="loading">Loading inventory data...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Top Selling Products</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Units Sold</th>
+          <th>Revenue</th>
+        </tr>
+      </thead>
+
+      <tbody id="topTable">
+        <tr>
+          <td colspan="3" class="loading">Loading...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>
-
-<div class="box">
-<h2>?? Stockout Risk</h2>
-<table>
-<thead>
-<tr><th>Product</th><th>Risk</th><th>Stock</th><th>Daily Sales</th><th>Inventory Cover</th></tr>
-</thead>
-<tbody id="riskTable">
-<tr><td colspan="5">Loading...</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="box">
-<h2>?? Ask StockSense AI</h2>
-<p class="sub">Ask questions about your retail inventory data.</p>
-<input id="question" value="Which products are at highest stockout risk and what should I do?">
-<button onclick="askAI()">Ask AI</button>
-<div id="answer">Ready to analyze your retail evidence.</div>
-</div>
-</main>
 
 <script>
-async function loadRisk(){
-try{
-const response=await fetch('/api/analytics/stock-risk');
-const result=await response.json();
-const data=result.stock_risk || [];
+async function loadDashboard() {
 
-document.getElementById('critical').textContent=
-data.filter(x=>x.stock_risk==='CRITICAL').length;
+  try {
 
-document.getElementById('high').textContent=
-data.filter(x=>x.stock_risk==='HIGH').length;
+    const productsResponse = await fetch("/api/products");
+    const productsData = await productsResponse.json();
 
-document.getElementById('riskTable').innerHTML=data.map(x=>`
-<tr>
-<td><b>${x.product_name}</b></td>
-<td><span class="badge ${x.stock_risk.toLowerCase()}">${x.stock_risk}</span></td>
-<td>${x.current_stock}</td>
-<td>${Number(x.average_daily_sales).toFixed(1)}</td>
-<td>${Number(x.days_of_inventory_cover).toFixed(1)} days</td>
-</tr>
-`).join('');
-}catch(e){
-console.error(e);
-document.getElementById('riskTable').innerHTML=
-'<tr><td colspan="5">Analytics unavailable</td></tr>';
+    document.getElementById("products").textContent =
+      productsData.products.length;
+
+    const summaryResponse =
+      await fetch("/api/dataset/summary");
+
+    const summaryData =
+      await summaryResponse.json();
+
+    document.getElementById("rows").textContent =
+      summaryData.summary.row_count;
+
+    const riskResponse =
+      await fetch("/api/analytics/stock-risk");
+
+    const riskData =
+      await riskResponse.json();
+
+    const risks = riskData.stock_risk || [];
+
+    document.getElementById("critical").textContent =
+      risks.filter(x => x.stock_risk === "CRITICAL").length;
+
+    document.getElementById("high").textContent =
+      risks.filter(x => x.stock_risk === "HIGH").length;
+
+    const riskTable =
+      document.getElementById("riskTable");
+
+    riskTable.innerHTML = "";
+
+    risks.forEach(item => {
+
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td><strong>${item.product_name}</strong></td>
+        <td>${item.category}</td>
+        <td>${item.current_stock}</td>
+        <td>${item.average_daily_sales}</td>
+        <td>${item.days_of_inventory_cover} days</td>
+        <td class="${item.stock_risk === "CRITICAL" ? "critical" : "high"}">
+          ${item.stock_risk}
+        </td>
+      `;
+
+      riskTable.appendChild(row);
+
+    });
+
+    const topResponse =
+      await fetch("/api/analytics/top-sellers");
+
+    const topData =
+      await topResponse.json();
+
+    const topTable =
+      document.getElementById("topTable");
+
+    topTable.innerHTML = "";
+
+    (topData.top_sellers || []).slice(0, 5).forEach(item => {
+
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td><strong>${item.product_name}</strong></td>
+        <td>${item.units_sold}</td>
+        <td>₹${Number(item.revenue).toLocaleString()}</td>
+      `;
+
+      topTable.appendChild(row);
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    document.getElementById("riskTable").innerHTML =
+      `<tr><td colspan="6">Unable to load data. Please refresh.</td></tr>`;
+
+  }
 }
-}
 
-async function askAI(){
-const question=document.getElementById('question').value;
-const answer=document.getElementById('answer');
-answer.textContent='Analyzing retail evidence...';
-
-try{
-const response=await fetch('/api/query',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({question:question})
-});
-const data=await response.json();
-
-if(data.gemini){
-answer.textContent=
-data.gemini.answer ||
-data.gemini.recommendation ||
-data.gemini.reasoning ||
-JSON.stringify(data.gemini,null,2);
-}else{
-answer.textContent=
-data.answer ||
-data.recommendation ||
-'Human review recommended based on available analytics.';
-}
-}catch(e){
-answer.textContent='AI reasoning unavailable. Please review the stockout analytics.';
-}
-}
-
-loadRisk();
+loadDashboard();
 </script>
+
 </body>
 </html>
