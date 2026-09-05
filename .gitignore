@@ -1,0 +1,28 @@
+# Environment / secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.python-version
+
+# Data (do not commit uploaded/generated retail CSVs)
+*.csv
+!sample_data/*.csv
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs
+*.log

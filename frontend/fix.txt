@@ -1,0 +1,24 @@
+const risks = await fetch('/api/analytics/stock-risk').then(r=>r.json());
+const data = risks.stock_risk || [];
+
+document.getElementById('critical').textContent =
+  data.filter(x => x.stock_risk === 'CRITICAL').length;
+
+document.getElementById('high').textContent =
+  data.filter(x => x.stock_risk === 'HIGH').length;
+
+const table = document.getElementById('riskTable');
+
+table.innerHTML = data.map(x => `
+<tr>
+<td><b>${x.product_name}</b></td>
+<td>
+<span class="badge ${x.stock_risk.toLowerCase()}">
+${x.stock_risk}
+</span>
+</td>
+<td>${x.current_stock}</td>
+<td>${Number(x.average_daily_sales).toFixed(1)}</td>
+<td>${Number(x.days_of_inventory_cover).toFixed(1)} days</td>
+</tr>
+`).join('');
