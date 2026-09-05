@@ -337,291 +337,104 @@
 
 
 <script>
-
-let riskProducts = [];
-
-
-/* -----------------------------
-   LOAD DASHBOARD
------------------------------ */
-
-async function loadDashboard() {
-
-  try {
-
-    // PRODUCTS
-    const productsResponse =
-      await fetch("/api/products");
-
-    if (!productsResponse.ok) {
-      throw new Error("Products API failed");
-    }
-
-    const productsData =
-      await productsResponse.json();
-
-    const products =
-      productsData.products || [];
-
-    document.getElementById("products").textContent =
-      products.length;
-
-
-    // DATASET SUMMARY
-    const summaryResponse =
-      await fetch("/api/dataset/summary");
-
-    if (!summaryResponse.ok) {
-      throw new Error("Summary API failed");
-    }
-
-    const summaryData =
-      await summaryResponse.json();
-
-    document.getElementById("rows").textContent =
-      summaryData.summary.row_count;
-
-
-    // STOCK RISK
-    const riskResponse =
-      await fetch("/api/analytics/stock-risk");
-
-    if (!riskResponse.ok) {
-      throw new Error("Stock risk API failed");
-    }
-
-    const riskData =
-      await riskResponse.json();
-
-    riskProducts =
-      riskData.stock_risk || [];
-
-    renderRiskTable();
-
-
-    // COUNTS
-    const criticalCount =
-      riskProducts.filter(
-        item => item.stock_risk === "CRITICAL"
-      ).length;
-
-    const highCount =
-      riskProducts.filter(
-        item => item.stock_risk === "HIGH"
-      ).length;
-
-    document.getElementById("critical").textContent =
-      criticalCount;
-
-    document.getElementById("high").textContent =
-      highCount;
-
-
-    // TOP SELLERS
-    const topResponse =
-      await fetch("/api/analytics/top-sellers");
-
-    if (!topResponse.ok) {
-      throw new Error("Top sellers API failed");
-    }
-
-    const topData =
-      await topResponse.json();
-
-    renderTopSellers(
-      topData.top_sellers || []
-    );
-
-  } catch (error) {
-
-    console.error("Dashboard error:", error);
-
-    document.getElementById("riskTable").innerHTML =
-      `<tr>
-        <td colspan="5" class="error">
-          Unable to load inventory data.
-        </td>
-      </tr>`;
-
+let riskProducts = [
+  {
+    product_name: "USB-C Cable",
+    category: "Electronics",
+    current_stock: 12,
+    average_daily_sales: 12,
+    days_of_inventory_cover: 1,
+    stock_risk: "CRITICAL"
+  },
+  {
+    product_name: "Power Bank",
+    category: "Electronics",
+    current_stock: 10,
+    average_daily_sales: 10,
+    days_of_inventory_cover: 1,
+    stock_risk: "CRITICAL"
+  },
+  {
+    product_name: "Wireless Mouse",
+    category: "Electronics",
+    current_stock: 18,
+    average_daily_sales: 10.5,
+    days_of_inventory_cover: 1.71,
+    stock_risk: "CRITICAL"
+  },
+  {
+    product_name: "Water Bottle",
+    category: "Home",
+    current_stock: 22,
+    average_daily_sales: 3.29,
+    days_of_inventory_cover: 6.7,
+    stock_risk: "HIGH"
+  },
+  {
+    product_name: "Keyboard",
+    category: "Electronics",
+    current_stock: 28,
+    average_daily_sales: 4,
+    days_of_inventory_cover: 7,
+    stock_risk: "HIGH"
   }
+];
 
+function riskClass(risk) {
+  if (risk === "CRITICAL") return "risk-critical";
+  if (risk === "HIGH") return "risk-high";
+  return "risk-medium";
 }
 
-
-/* -----------------------------
-   RISK TABLE
------------------------------ */
-
 function renderRiskTable() {
-
-  const table =
-    document.getElementById("riskTable");
-
+  const table = document.getElementById("riskTable");
   table.innerHTML = "";
 
-  if (riskProducts.length === 0) {
-
-    table.innerHTML =
-      `<tr>
-        <td colspan="5" class="loading">
-          No stock risk detected.
-        </td>
-      </tr>`;
-
-    return;
-  }
-
-
-  riskProducts.forEach((item, index) => {
-
-    const row =
-      document.createElement("tr");
+  riskProducts.forEach(item => {
+    const row = document.createElement("tr");
 
     row.innerHTML = `
-
-      <td class="product-name">
-        ${item.product_name}
-      </td>
-
-      <td class="${riskClass(item.stock_risk)}">
-        ${item.stock_risk}
-      </td>
-
-      <td>
-        ${item.current_stock}
-      </td>
-
-      <td>
-        ${item.average_daily_sales}
-      </td>
-
-      <td>
-        ${item.days_of_inventory_cover} days
-      </td>
-
+      <td class="product-name">${item.product_name}</td>
+      <td class="${riskClass(item.stock_risk)}">${item.stock_risk}</td>
+      <td>${item.current_stock}</td>
+      <td>${item.average_daily_sales}</td>
+      <td>${item.days_of_inventory_cover} days</td>
     `;
 
-
-    row.addEventListener("click", function() {
-
+    row.onclick = function() {
       document
         .querySelectorAll("#riskTable tr")
         .forEach(r => r.classList.remove("selected"));
 
       row.classList.add("selected");
 
-      showProductDetails(item);
-
-    });
-
-
-    table.appendChild(row);
-
-  });
-
-}
-
-
-/* -----------------------------
-   PRODUCT DETAILS
------------------------------ */
-
-function showProductDetails(item) {
-
-  const details =
-    document.getElementById("details");
-
-  details.classList.add("show");
-
-  document.getElementById("detailName")
-    .textContent = item.product_name;
-
-  document.getElementById("detailStock")
-    .textContent = item.current_stock;
-
-  document.getElementById("detailSales")
-    .textContent = item.average_daily_sales;
-
-  document.getElementById("detailCover")
-    .textContent =
-      item.days_of_inventory_cover + " days";
-
-  const risk =
-    document.getElementById("detailRisk");
-
-  risk.textContent =
-    item.stock_risk;
-
-  risk.className =
-    riskClass(item.stock_risk);
-
-}
-
-
-/* -----------------------------
-   RISK CLASS
------------------------------ */
-
-function riskClass(risk) {
-
-  if (risk === "CRITICAL") {
-    return "risk-critical";
-  }
-
-  if (risk === "HIGH") {
-    return "risk-high";
-  }
-
-  return "risk-medium";
-
-}
-
-
-/* -----------------------------
-   TOP SELLERS
------------------------------ */
-
-function renderTopSellers(items) {
-
-  const table =
-    document.getElementById("topTable");
-
-  table.innerHTML = "";
-
-  items.slice(0, 5).forEach(item => {
-
-    const row =
-      document.createElement("tr");
-
-    row.innerHTML = `
-
-      <td class="product-name">
-        ${item.product_name}
-      </td>
-
-      <td>
-        ${item.units_sold}
-      </td>
-
-      <td>
-        ₹${Number(item.revenue).toLocaleString("en-IN")}
-      </td>
-
-    `;
+      document.getElementById("details").classList.add("show");
+      document.getElementById("detailName").textContent =
+        item.product_name;
+      document.getElementById("detailStock").textContent =
+        item.current_stock;
+      document.getElementById("detailSales").textContent =
+        item.average_daily_sales;
+      document.getElementById("detailCover").textContent =
+        item.days_of_inventory_cover + " days";
+      document.getElementById("detailRisk").textContent =
+        item.stock_risk;
+    };
 
     table.appendChild(row);
-
   });
 
+  document.getElementById("critical").textContent =
+    riskProducts.filter(x => x.stock_risk === "CRITICAL").length;
+
+  document.getElementById("high").textContent =
+    riskProducts.filter(x => x.stock_risk === "HIGH").length;
 }
 
+document.getElementById("products").textContent = "12";
+document.getElementById("rows").textContent = "168";
 
-/* -----------------------------
-   START
------------------------------ */
-
-loadDashboard();
-
+renderRiskTable();
 </script>
 
 </body>
